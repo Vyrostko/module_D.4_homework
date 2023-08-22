@@ -1,10 +1,11 @@
 from django.views import View
-from django.views.generic import ListView, DetailView# импортируем класс, который говорит нам о том, что в этом представлении мы будем выводить список объектов из БД
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView# импортируем класс, который говорит нам о том, что в этом представлении мы будем выводить список объектов из БД
 from .models import News
 from datetime import datetime
 from django.shortcuts import render
 from django.core.paginator import Paginator # импортируем класс, позволяющий удобно осуществлять постраничный вывод
 from .filters import NewsFilter # импортируем недавно написанный фильтр
+from django.urls import reverse_lazy
  
  
 class NewsList(ListView):
@@ -41,4 +42,30 @@ class News(View):
             'news': news,
         }
         return render(request, 'news.html', data)
+    
+class PostCreateView(CreateView):
+    model = News
+    context_object_name = 'new_post_form'
+    template_name = 'MyApp/post_create.html'
+    fields = ('author', 'header', 'body', 'news_date')
+    success_url = reverse_lazy('news_list')
+   
+class PostUpdateView(UpdateView):
+    model = News
+    context_object_name = 'edit_news_form'
+    template_name = 'MyApp/news_edit.html'
+    fields = ('header', 'body')
+    success_url = reverse_lazy('viewname=news_list')
+    
+class PostDeleteView(DeleteView):
+    model = News
+    context_object_name = 'delete_news_form'
+    template_name = 'MyApp/news_delete.html'
+    fields = ('header', 'news_date')
+    success_url = reverse_lazy('news_list')
+
+class PostDetailedView(DetailView):
+    model = News
+    template_name = 'MyApp/post_details.html'
+    queryset = News.objects.all()
     
